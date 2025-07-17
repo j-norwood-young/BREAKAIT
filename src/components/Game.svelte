@@ -488,11 +488,17 @@
     }
 
     // Ball and walls
-    if (ball.x + ball.dx > CANVAS_WIDTH - ball.radius || ball.x + ball.dx < ball.radius) {
+    if (ball.x + ball.dx > CANVAS_WIDTH - ball.radius) {
+      ball.x = CANVAS_WIDTH - ball.radius
+      ball.dx = -ball.dx
+      audioSystem.playWallHit()
+    } else if (ball.x + ball.dx < ball.radius) {
+      ball.x = ball.radius
       ball.dx = -ball.dx
       audioSystem.playWallHit()
     }
     if (ball.y + ball.dy < ball.radius) {
+      ball.y = ball.radius
       ball.dy = -ball.dy
       audioSystem.playWallHit()
     } else if (ball.y + ball.dy > CANVAS_HEIGHT - ball.radius) {
