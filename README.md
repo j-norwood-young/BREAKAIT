@@ -4,4 +4,4 @@ This Breakout clone is a quick experiment with using AI to code. I started with 
 
 It might be fun to train an AI how to play it :)
 
-(https://j-norwood-young.github.io/BREAKAIT/)[Play it HERE]
+[Play it HERE](https://j-norwood-young.github.io/BREAKAIT/)
