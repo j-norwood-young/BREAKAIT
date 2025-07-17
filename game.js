@@ -673,9 +673,17 @@ document.addEventListener('keyup', (e) => {
 
 document.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
-    const relativeX = e.clientX - rect.left;
-    if (relativeX > 0 && relativeX < canvas.width) {
-        paddle.x = relativeX - paddle.width / 2;
+    const mouseX = e.clientX - rect.left;
+    
+    if (mouseX >= 0 && mouseX <= canvas.width) {
+        paddle.x = mouseX - paddle.width / 2;
+        
+        // Keep paddle within canvas bounds
+        if (paddle.x < 0) {
+            paddle.x = 0;
+        } else if (paddle.x + paddle.width > canvas.width) {
+            paddle.x = canvas.width - paddle.width;
+        }
     }
 });
 
@@ -694,7 +702,20 @@ document.addEventListener('touchstart', (e) => {
     isTouching = true;
     const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
-    touchStartX = touch.clientX - rect.left;
+    const touchX = touch.clientX - rect.left;
+    touchStartX = touchX;
+    
+    // Set paddle position immediately on touch start for better responsiveness
+    if (touchX >= 0 && touchX <= canvas.width) {
+        paddle.x = touchX - paddle.width / 2;
+        
+        // Keep paddle within canvas bounds
+        if (paddle.x < 0) {
+            paddle.x = 0;
+        } else if (paddle.x + paddle.width > canvas.width) {
+            paddle.x = canvas.width - paddle.width;
+        }
+    }
     
     // Handle game start/restart
     if (gameOver && gameWon) {
@@ -710,10 +731,18 @@ document.addEventListener('touchmove', (e) => {
     if (isTouching) {
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
-        const relativeX = touch.clientX - rect.left;
+        const touchX = touch.clientX - rect.left;
         
-        if (relativeX > 0 && relativeX < canvas.width) {
-            paddle.x = relativeX - paddle.width / 2;
+        // Only use X position for paddle movement, keep Y fixed
+        if (touchX >= 0 && touchX <= canvas.width) {
+            paddle.x = touchX - paddle.width / 2;
+            
+            // Keep paddle within canvas bounds
+            if (paddle.x < 0) {
+                paddle.x = 0;
+            } else if (paddle.x + paddle.width > canvas.width) {
+                paddle.x = canvas.width - paddle.width;
+            }
         }
     }
 }, { passive: false });
