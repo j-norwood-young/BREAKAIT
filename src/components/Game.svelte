@@ -9,7 +9,7 @@
 
   // Canvas and context
   let canvas: HTMLCanvasElement
-  let ctx: CanvasRenderingContext2D
+  let ctx: CanvasRenderingContext2D | null = null
 
   // Game constants
   const CANVAS_WIDTH = 800
@@ -79,7 +79,17 @@
   const FRAME_TIME = 1000 / TARGET_FPS // 16.67ms for 60 FPS
 
   onMount(async () => {
-    ctx = canvas.getContext('2d')!
+    // Wait for canvas to be available
+    if (!canvas) {
+      console.error('Canvas element not found')
+      return
+    }
+    
+    ctx = canvas.getContext('2d')
+    if (!ctx) {
+      console.error('Could not get 2D context from canvas')
+      return
+    }
     
     // Load levels
     await levelManager.loadLevels()
@@ -694,6 +704,8 @@
   }
 
   function draw() {
+    if (!ctx) return
+    
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
     
     drawBricks()
@@ -712,6 +724,7 @@
   }
 
   function drawPaddle() {
+    if (!ctx) return
     ctx.beginPath()
     
     const radius = paddle.height / 2
@@ -748,6 +761,7 @@
   }
 
   function drawBalls() {
+    if (!ctx) return
     for (const ball of balls) {
       ctx.beginPath()
       const gradient = ctx.createRadialGradient(
@@ -791,6 +805,7 @@
   }
 
   function drawBricks() {
+    if (!ctx) return
     for (let c = 0; c < bricks.length; c++) {
       for (let r = 0; r < bricks[c].length; r++) {
         const brick = bricks[c][r]
@@ -829,6 +844,7 @@
   }
 
   function drawPowerUps() {
+    if (!ctx) return
     for (const powerUp of powerUps) {
       ctx.beginPath()
       ctx.rect(powerUp.x, powerUp.y, 10, 10)
@@ -839,6 +855,7 @@
   }
 
   function drawParticles() {
+    if (!ctx) return
     for (const particle of particles) {
       ctx.beginPath()
       ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
@@ -849,6 +866,7 @@
   }
 
   function drawUI() {
+    if (!ctx) return
     ctx.font = '16px "Press Start 2P", monospace'
     ctx.fillStyle = '#fff'
 
@@ -866,6 +884,7 @@
   }
 
   function drawNotifications() {
+    if (!ctx) return
     ctx.font = '16px "Press Start 2P", monospace'
     ctx.fillStyle = '#fff'
     ctx.textAlign = 'center'
@@ -875,6 +894,7 @@
   }
 
   function drawGameOver() {
+    if (!ctx) return
     ctx.font = '48px "Press Start 2P", monospace'
     ctx.fillStyle = '#fff'
     ctx.textAlign = 'center'
@@ -894,6 +914,7 @@
   }
 
   function drawStartScreen() {
+    if (!ctx) return
     ctx.font = '24px "Press Start 2P", monospace'
     ctx.fillStyle = '#fff'
     ctx.textAlign = 'center'
