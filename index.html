@@ -10,6 +10,20 @@
 </head>
 <body>
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script>
+        // Check if we're in development (Vite) or production (GitHub Pages)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // Development environment - load the Vite dev server
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = '/src/main.ts';
+            document.body.appendChild(script);
+        } else {
+            // Production environment - load the bundled game.js
+            const script = document.createElement('script');
+            script.src = 'game.js';
+            document.body.appendChild(script);
+        }
+    </script>
 </body>
 </html>
