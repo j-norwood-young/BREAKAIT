@@ -9,9 +9,13 @@ let sounds = {};
 function initAudio() {
     try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Resume audio context if it's suspended (mobile browsers)
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
         createSounds();
     } catch (e) {
-        console.log('Audio not supported');
+        console.log('Audio not supported:', e.message);
     }
 }
 
@@ -45,29 +49,43 @@ function createTone(frequency, duration, type) {
     return function() {
         if (!audioContext) return;
         
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.type = type;
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
+        try {
+            // Resume audio context if suspended (mobile browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+            // Silently fail if audio context is not ready
+            console.log('Audio not ready:', e.message);
+        }
     };
 }
 
 // Initialize audio when user interacts
-document.addEventListener('click', () => {
+function initAudioOnInteraction() {
     if (!audioContext) {
         initAudio();
     }
-});
+}
+
+document.addEventListener('click', initAudioOnInteraction);
+document.addEventListener('touchstart', initAudioOnInteraction);
+document.addEventListener('keydown', initAudioOnInteraction);
 
 // Game variables
 let score = 0;
