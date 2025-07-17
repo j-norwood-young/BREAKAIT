@@ -617,6 +617,10 @@ let leftPressed = false;
 let cheatCode = '';
 const WIN_CHEAT = 'I WIN!';
 
+// Touch controls for mobile
+let isTouching = false;
+let touchStartX = 0;
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Right' || e.key === 'ArrowRight') {
         rightPressed = true;
@@ -665,6 +669,41 @@ document.addEventListener('click', () => {
         initialStart = false;
     }
 });
+
+// Touch event handlers for mobile
+document.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    isTouching = true;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    touchStartX = touch.clientX - rect.left;
+    
+    // Handle game start/restart
+    if (gameOver && gameWon) {
+        restartGame();
+    } else if (!gameStarted) {
+        gameStarted = true;
+        initialStart = false;
+    }
+}, { passive: false });
+
+document.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    if (isTouching) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const relativeX = touch.clientX - rect.left;
+        
+        if (relativeX > 0 && relativeX < canvas.width) {
+            paddle.x = relativeX - paddle.width / 2;
+        }
+    }
+}, { passive: false });
+
+document.addEventListener('touchend', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    isTouching = false;
+}, { passive: false });
 
 
 function resetBallAndPaddle() {
