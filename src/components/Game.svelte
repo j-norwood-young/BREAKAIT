@@ -68,6 +68,12 @@
 
   // Animation frame ID
   let animationId: number
+  
+  // Frame timing
+  let lastTime = 0
+  let deltaTime = 0
+  const TARGET_FPS = 60
+  const FRAME_TIME = 1000 / TARGET_FPS // 16.67ms for 60 FPS
 
   onMount(async () => {
     ctx = canvas.getContext('2d')!
@@ -81,7 +87,8 @@
     // Set up event listeners
     setupEventListeners()
     
-    // Start game loop
+    // Start game loop with initial timestamp
+    lastTime = performance.now()
     gameLoop()
   })
 
@@ -288,22 +295,25 @@
       balls[0].y = paddle.y - balls[0].radius
     }
 
+    // Normalize delta time to 60 FPS baseline
+    const timeMultiplier = deltaTime / FRAME_TIME
+
     // Update paddle
     if (rightPressed) {
-      paddle.dx += paddle.acceleration
+      paddle.dx += paddle.acceleration * timeMultiplier
       if (paddle.dx > paddle.maxSpeed) {
         paddle.dx = paddle.maxSpeed
       }
     } else if (leftPressed) {
-      paddle.dx -= paddle.acceleration
+      paddle.dx -= paddle.acceleration * timeMultiplier
       if (paddle.dx < -paddle.maxSpeed) {
         paddle.dx = -paddle.maxSpeed
       }
     } else {
-      paddle.dx *= 0.9 // friction
+      paddle.dx *= Math.pow(0.9, timeMultiplier) // friction with frame rate compensation
     }
 
-    paddle.x += paddle.dx
+    paddle.x += paddle.dx * timeMultiplier
 
     if (paddle.x < 0) {
       paddle.x = 0
@@ -315,8 +325,8 @@
 
     // Move ball
     if (gameState.gameStarted && balls[0]) {
-      balls[0].x += balls[0].dx
-      balls[0].y += balls[0].dy
+      balls[0].x += balls[0].dx * timeMultiplier
+      balls[0].y += balls[0].dy * timeMultiplier
     }
 
     collisionDetection()
@@ -474,9 +484,11 @@
   }
 
   function updatePowerUps() {
+    const timeMultiplier = deltaTime / FRAME_TIME
+    
     for (let i = powerUps.length - 1; i >= 0; i--) {
       const powerUp = powerUps[i]
-      powerUp.y += powerUp.dy
+      powerUp.y += powerUp.dy * timeMultiplier
 
       // Check for collision with paddle
       if (
@@ -543,21 +555,25 @@
   }
 
   function updateParticles() {
+    const timeMultiplier = deltaTime / FRAME_TIME
+    
     for (let i = particles.length - 1; i >= 0; i--) {
       const particle = particles[i]
-      particle.x += particle.dx
-      particle.y += particle.dy
-      particle.life--
-      if (particle.life === 0) {
+      particle.x += particle.dx * timeMultiplier
+      particle.y += particle.dy * timeMultiplier
+      particle.life -= timeMultiplier
+      if (particle.life <= 0) {
         particles.splice(i, 1)
       }
     }
   }
 
   function updateNotifications() {
+    const timeMultiplier = deltaTime / FRAME_TIME
+    
     for (let i = notifications.length - 1; i >= 0; i--) {
-      notifications[i].time--
-      if (notifications[i].time === 0) {
+      notifications[i].time -= timeMultiplier
+      if (notifications[i].time <= 0) {
         notifications.splice(i, 1)
       }
     }
@@ -822,7 +838,14 @@
     }
   }
 
-  function gameLoop() {
+  function gameLoop(currentTime: number = performance.now()) {
+    if (lastTime === 0) {
+      lastTime = currentTime
+    }
+    
+    deltaTime = currentTime - lastTime
+    lastTime = currentTime
+
     update()
     draw()
     animationId = requestAnimationFrame(gameLoop)
