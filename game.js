@@ -675,8 +675,11 @@ document.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     
-    if (mouseX >= 0 && mouseX <= canvas.width) {
-        paddle.x = mouseX - paddle.width / 2;
+    if (mouseX >= 0 && mouseX <= rect.width) {
+        // Scale mouse position to canvas coordinates
+        const scaleX = canvas.width / rect.width;
+        const canvasX = mouseX * scaleX;
+        paddle.x = canvasX - paddle.width / 2;
         
         // Keep paddle within canvas bounds
         if (paddle.x < 0) {
@@ -706,8 +709,11 @@ document.addEventListener('touchstart', (e) => {
     touchStartX = touchX;
     
     // Set paddle position immediately on touch start for better responsiveness
-    if (touchX >= 0 && touchX <= canvas.width) {
-        paddle.x = touchX - paddle.width / 2;
+    if (touchX >= 0 && touchX <= rect.width) {
+        // Scale touch position to canvas coordinates
+        const scaleX = canvas.width / rect.width;
+        const canvasX = touchX * scaleX;
+        paddle.x = canvasX - paddle.width / 2;
         
         // Keep paddle within canvas bounds
         if (paddle.x < 0) {
@@ -734,8 +740,11 @@ document.addEventListener('touchmove', (e) => {
         const touchX = touch.clientX - rect.left;
         
         // Only use X position for paddle movement, keep Y fixed
-        if (touchX >= 0 && touchX <= canvas.width) {
-            paddle.x = touchX - paddle.width / 2;
+        if (touchX >= 0 && touchX <= rect.width) {
+            // Scale touch position to canvas coordinates
+            const scaleX = canvas.width / rect.width;
+            const canvasX = touchX * scaleX;
+            paddle.x = canvasX - paddle.width / 2;
             
             // Keep paddle within canvas bounds
             if (paddle.x < 0) {
