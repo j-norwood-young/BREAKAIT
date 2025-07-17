@@ -66,6 +66,9 @@
   // Touch controls
   let isTouching = false
 
+  // Scoring system
+  let lastBrickHitTime = 0
+
   // Animation frame ID
   let animationId: number
   
@@ -358,7 +361,36 @@
               brick.hits--
               if (brick.hits === 0) {
                 brick.status = 0
-                gameState.score++
+                
+                // Calculate combo scoring based on time since last brick hit
+                const currentTime = performance.now()
+                const timeSinceLastHit = lastBrickHitTime > 0 ? (currentTime - lastBrickHitTime) / 1000 : 999 // Convert to seconds
+                
+                let scoreMultiplier = 1
+                if (lastBrickHitTime > 0) { // Only apply combo if we had a previous hit
+                  // Sliding scale: 0 seconds = 10x (1000 points), 5 seconds = 1x (100 points)
+                  if (timeSinceLastHit <= 5) {
+                    // Smooth sliding scale from 10x to 1x over 5 seconds
+                    const progress = (5 - timeSinceLastHit) / 5 // 0 to 1
+                    scoreMultiplier = 1 + (9 * Math.pow(progress, 0.7)) // Exponential curve for more randomness
+                  } else {
+                    scoreMultiplier = 1 // 100 points
+                  }
+                }
+                
+                const baseScore = 100
+                const earnedPoints = Math.round(baseScore * scoreMultiplier)
+                gameState.score += earnedPoints
+                lastBrickHitTime = currentTime
+                
+                // Show combo notification if applicable
+                if (scoreMultiplier > 1) {
+                  notifications.push({ 
+                    text: `COMBO x${Math.round(scoreMultiplier)}! +${earnedPoints}`, 
+                    time: 90 
+                  })
+                }
+                
                 audioSystem.playBrickDestroyed()
                 
                 // Create particles
@@ -382,7 +414,34 @@
               }
             } else {
               brick.status = 0
-              gameState.score++
+              
+              // Calculate combo scoring for fire ball too
+              const currentTime = performance.now()
+              const timeSinceLastHit = lastBrickHitTime > 0 ? (currentTime - lastBrickHitTime) / 1000 : 999
+              
+              let scoreMultiplier = 1
+              if (lastBrickHitTime > 0) {
+                // Sliding scale: 0 seconds = 10x (1000 points), 5 seconds = 1x (100 points)
+                if (timeSinceLastHit <= 5) {
+                  // Smooth sliding scale from 10x to 1x over 5 seconds
+                  const progress = (5 - timeSinceLastHit) / 5 // 0 to 1
+                  scoreMultiplier = 1 + (9 * Math.pow(progress, 0.7)) // Exponential curve for more randomness
+                } else {
+                  scoreMultiplier = 1
+                }
+              }
+              
+              const baseScore = 100
+              const earnedPoints = Math.round(baseScore * scoreMultiplier)
+              gameState.score += earnedPoints
+              lastBrickHitTime = currentTime
+              
+              if (scoreMultiplier > 1) {
+                notifications.push({ 
+                  text: `FIRE COMBO x${Math.round(scoreMultiplier)}! +${earnedPoints}`, 
+                  time: 90 
+                })
+              }
             }
 
             // Check if level complete
