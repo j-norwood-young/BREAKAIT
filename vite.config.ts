@@ -4,8 +4,8 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 export default defineConfig({
   plugins: [svelte()],
   build: {
-    outDir: 'dist', // Output to dist directory
-    emptyOutDir: true, // Clear dist directory on each build
+    outDir: 'docs', // Output to docs directory for GitHub Pages
+    emptyOutDir: true, // Clear docs directory on each build
     rollupOptions: {
       output: {
         entryFileNames: 'game.js',
