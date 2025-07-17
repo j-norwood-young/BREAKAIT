@@ -10,7 +10,7 @@
       [3, 3, 3, 3, 3, 3, 3, 3]
     ]
   },
-  "ballSpeed": 10,
+  "ballSpeed": 4,
   "lives": 5,
   "powerUpChance": 0.2
 } 

@@ -475,8 +475,11 @@
       let collidePoint = ball.x - (paddle.x + paddle.width / 2)
       collidePoint = collidePoint / (paddle.width / 2)
       let angle = collidePoint * (Math.PI / 3)
-      ball.dx = ball.speed * Math.sin(angle)
-      ball.dy = -ball.speed * Math.cos(angle)
+      
+      // Calculate current ball speed to preserve power-up modifications
+      const currentSpeed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy)
+      ball.dx = currentSpeed * Math.sin(angle)
+      ball.dy = -currentSpeed * Math.cos(angle)
 
       if (gameState.stickyBall) {
         gameState.gameStarted = false
