@@ -15,7 +15,7 @@ function initAudio() {
         }
         createSounds();
     } catch (e) {
-        console.log('Audio not supported:', e.message);
+        // console.log('Audio not supported:', e.message);
     }
 }
 
@@ -71,7 +71,7 @@ function createTone(frequency, duration, type) {
             oscillator.stop(audioContext.currentTime + duration);
         } catch (e) {
             // Silently fail if audio context is not ready
-            console.log('Audio not ready:', e.message);
+            // console.log('Audio not ready:', e.message);
         }
     };
 }
@@ -610,6 +610,10 @@ function draw() {
             ctx.fillText('Click to Restart', canvas.width / 2, canvas.height / 2 + 80);
         } else {
             ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+            ctx.font = '24px "Press Start 2P"';
+            ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 50);
+            ctx.font = '16px "Press Start 2P"';
+            ctx.fillText('Click to Restart', canvas.width / 2, canvas.height / 2 + 80);
         }
     } else if (initialStart) {
         ctx.font = '24px "Press Start 2P"';
@@ -634,6 +638,7 @@ let rightPressed = false;
 let leftPressed = false;
 let cheatCode = '';
 const WIN_CHEAT = 'I WIN!';
+const LOSE_CHEAT = 'I LOSE';
 
 // Touch controls for mobile
 let isTouching = false;
@@ -652,12 +657,17 @@ document.addEventListener('keydown', (e) => {
     // Handle cheat code
     if (e.key.length === 1) {
         cheatCode += e.key;
-        if (cheatCode.length > WIN_CHEAT.length) {
-            cheatCode = cheatCode.slice(-WIN_CHEAT.length);
+        if (cheatCode.length > Math.max(WIN_CHEAT.length, LOSE_CHEAT.length)) {
+            cheatCode = cheatCode.slice(-Math.max(WIN_CHEAT.length, LOSE_CHEAT.length));
         }
         if (cheatCode === WIN_CHEAT) {
             gameWon = true;
             gameOver = true;
+            cheatCode = ''; // Reset cheat code
+        } else if (cheatCode === LOSE_CHEAT) {
+            lives = 0;
+            gameOver = true;
+            gameWon = false;
             cheatCode = ''; // Reset cheat code
         }
     }
@@ -691,7 +701,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 document.addEventListener('click', () => {
-    if (gameOver && gameWon) {
+    if (gameOver) {
         restartGame();
     } else if (!gameStarted) {
         gameStarted = true;
@@ -724,7 +734,7 @@ document.addEventListener('touchstart', (e) => {
     }
     
     // Handle game start/restart
-    if (gameOver && gameWon) {
+    if (gameOver) {
         restartGame();
     } else if (!gameStarted) {
         gameStarted = true;
