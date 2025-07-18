@@ -1,0 +1,95 @@
+/* Reset and base styles */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  background-color: #000;
+  color: #fff;
+  font-family: "Press Start 2P", cursive;
+  text-align: center;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Game canvas styles */
+.game-canvas {
+  background-color: #000;
+  border: 4px solid #fff;
+  max-width: 100%;
+  max-height: 100vh;
+  display: block;
+  margin: 0 auto;
+  touch-action: none;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .game-canvas {
+    border-width: 2px;
+    max-height: calc(100vh - 20px);
+  }
+  
+  h1 {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+}
+
+/* Prevent any scrolling */
+html {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Main container styles */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+h1 {
+  margin: 10px 0;
+  font-size: 24px;
+  color: #fff;
+}
+
+.high-score {
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #ccc;
+} 

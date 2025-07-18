@@ -192,6 +192,51 @@
       gameState.initialStart = false
     }
     
+    // Handle SHIFT + number level jump cheat
+    // Map shifted number keys to their corresponding symbols
+    const shiftedNumberToLevel: Record<string, number> = {
+      '!': 1,
+      '@': 2,
+      '#': 3,
+      '$': 4,
+      '%': 5,
+      '^': 6,
+      '&': 7,
+      '*': 8,
+      '(': 9,
+      ')': 10
+    }
+    if (e.shiftKey && shiftedNumberToLevel.hasOwnProperty(e.key)) {
+      const levelNumber = shiftedNumberToLevel[e.key]
+      if (levelNumber > 0) {
+        const success = levelManager.jumpToLevel(levelNumber)
+        if (success) {
+          gameState.level = levelNumber
+          gameState.gameOver = false
+          gameState.gameWon = false
+          gameState.gameStarted = false
+          gameState.initialStart = false
+          gameState.lives = levelManager.getCurrentLevel()?.lives || 5
+          gameState.score = 0
+          
+          // Clear arrays
+          balls = []
+          powerUps = []
+          particles = []
+          notifications = []
+          
+          // Recreate game objects
+          initGame()
+          
+          // Show notification
+          notifications.push({ 
+            text: `Jumped to Level ${levelNumber}!`, 
+            time: 120 
+          })
+        }
+      }
+    }
+    
     // Handle cheat code
     if (e.key.length === 1) {
       cheatCode += e.key

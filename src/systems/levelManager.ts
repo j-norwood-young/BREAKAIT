@@ -7,7 +7,11 @@ class LevelManager {
   async loadLevels(): Promise<void> {
     // In a real implementation, we could dynamically discover levels
     // For now, we'll load the levels we know exist
-    const levelFiles = ['level1.json', 'level2.json', 'level3.json']
+    const levelFiles = [
+      'level1.json', 'level2.json', 'level3.json', 'level4.json', 
+      'level5.json', 'level6.json', 'level7.json', 'level8.json',
+      'level9.json', 'level10.json'
+    ]
     
     for (const file of levelFiles) {
       try {
@@ -56,6 +60,10 @@ class LevelManager {
       return true
     }
     return false
+  }
+
+  jumpToLevel(levelId: number): boolean {
+    return this.setLevel(levelId)
   }
 
   resetToFirstLevel(): void {
